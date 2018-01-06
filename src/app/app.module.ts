@@ -1,12 +1,18 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { AppComponent } from './app.component';
 import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.component';
 import { MessagesComponent } from './pages/messages/messages.component';
 import { ChatRoomsComponent } from './pages/messages/chat-rooms/chat-rooms.component';
 import { ConversationComponent } from './pages/messages/conversation/conversation.component';
+import { LoginComponent } from './pages/login/login.component';
+import { RegistrationComponent } from './pages/registration/registration.component';
+import { AuthenticationService } from './services';
+import { JWTInterceptor } from './helpers/jwt-interceptor';
 
 export const appRoutes = [
   {
@@ -14,6 +20,22 @@ export const appRoutes = [
     component: MessagesComponent,
     data: {
       title: 'Messages'
+    },
+    pathMatch: 'full'
+  },
+  {
+    path: 'login',
+    component: LoginComponent,
+    data: {
+      title: 'Login'
+    },
+    pathMatch: 'full'
+  },
+  {
+    path: 'register',
+    component: RegistrationComponent,
+    data: {
+      title: 'Registration'
     },
     pathMatch: 'full'
   },
@@ -31,13 +53,25 @@ export const appRoutes = [
     PageNotFoundComponent,
     MessagesComponent,
     ChatRoomsComponent,
-    ConversationComponent
+    ConversationComponent,
+    LoginComponent,
+    RegistrationComponent
   ],
   imports: [
     BrowserModule,
+    HttpClientModule,
+    FormsModule,
+    ReactiveFormsModule,
     RouterModule.forRoot(appRoutes)
   ],
-  providers: [],
+  providers: [
+    AuthenticationService,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: JWTInterceptor,
+      multi: true
+    },
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
