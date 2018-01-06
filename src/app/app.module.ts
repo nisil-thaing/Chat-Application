@@ -13,6 +13,8 @@ import { LoginComponent } from './pages/login/login.component';
 import { RegistrationComponent } from './pages/registration/registration.component';
 import { AuthenticationService } from './services';
 import { JWTInterceptor } from './helpers/jwt-interceptor';
+import { ChatService } from './services/chat/chat.service';
+import { WebsocketService } from './services/web-socket/web-socket.service';
 
 export const appRoutes = [
   {
@@ -66,6 +68,8 @@ export const appRoutes = [
   ],
   providers: [
     AuthenticationService,
+    WebsocketService,
+    ChatService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: JWTInterceptor,
