@@ -1,8 +1,8 @@
-<div class="conversation-wrapper col-xs-9">
+<div class="conversation-wrapper col-xs-9" *ngIf="selectedRoom && selectedRoom._id">
   <div class="heading-control" align="center">
     <div class="parner-info">
-      <span>Someone</span>
-      <p>Active 1h ago</p>
+      <span>{{ selectedRoom?.name }}</span>
+      <p>{{ selectedRoom?.updatedAt }}</p>
     </div>
   </div>
   <div class="conversation-content">
@@ -52,6 +52,6 @@
     </div>
   </div>
   <div class="message-control">
-    <input type="text" placeholder="Type a message..." (keyup.enter)="onChatSubmit()">
+    <input type="text" placeholder="Type a message..." [(ngModel)]="chatMessage" (keyup.enter)="onChatSubmit()">
   </div>
 </div>

@@ -1,4 +1,9 @@
 <div class="messages-wrapper">
-  <app-chat-rooms></app-chat-rooms>
-  <app-conversation></app-conversation>
+  <app-chat-rooms
+    [selectedRoom]="selectedRoom"
+    (joinRoom)="onJoinRoom($event)">
+  </app-chat-rooms>
+  <app-conversation
+    [selectedRoom]="selectedRoom">
+  </app-conversation>
 </div>
