@@ -13,13 +13,13 @@ export class AuthenticationService {
   constructor(private _httpClient: HttpClient) { }
 
   login(params: AuthenticateInput): Observable<User> {
-    return this._httpClient.post('/users/login', params, { observe: 'response' })
-      .map((response: HttpResponse<any>) => {
-        if (response.status !== HTTP_STATUS.SUCCESS) {
+    return this._httpClient.post('/users/login', params)
+      .map((response: any) => {
+        if (response.code !== HTTP_STATUS.SUCCESS) {
           return Observable.throw('Oops! Something went wrong!');
         }
 
-        const user = response.body;
+        const user = response.resp;
 
         if (user && user['token']) {
             // store user details and jwt token in local storage to keep user logged in between page refreshes

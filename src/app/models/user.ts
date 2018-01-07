@@ -3,6 +3,12 @@ export interface AuthenticateInput {
   password: string;
 }
 
+export interface CreateUserInput {
+  email: string;
+  password: string;
+  name: string;
+}
+
 export class User {
   _id: string;
   email: string;

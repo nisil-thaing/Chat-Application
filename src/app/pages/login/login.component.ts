@@ -23,6 +23,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
+    this.checkLoginState();
     this.createFormControls();
     this.createForm();
   }
@@ -30,6 +31,14 @@ export class LoginComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     if (this.loginStream$ && this.loginStream$.unsubscribe) {
       this.loginStream$.unsubscribe();
+    }
+  }
+
+  checkLoginState() {
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+
+    if (currentUser && currentUser.token) {
+      this._router.navigate(['/']);
     }
   }
 

@@ -11,7 +11,7 @@ import { ChatRoomsComponent } from './pages/messages/chat-rooms/chat-rooms.compo
 import { ConversationComponent } from './pages/messages/conversation/conversation.component';
 import { LoginComponent } from './pages/login/login.component';
 import { RegistrationComponent } from './pages/registration/registration.component';
-import { AuthenticationService } from './services';
+import { AuthenticationService, UserService } from './services';
 import { JWTInterceptor } from './helpers/jwt-interceptor';
 import { ChatService } from './services/chat/chat.service';
 import { WebsocketService } from './services/web-socket/web-socket.service';
@@ -70,6 +70,7 @@ export const appRoutes = [
   ],
   providers: [
     AuthenticationService,
+    UserService,
     WebsocketService,
     ChatService,
     AuthGuard,

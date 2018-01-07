@@ -29,6 +29,11 @@ export class WebsocketService {
         obs.next(data);
       });
 
+      /* this.socket.on('join', (data: { roomId: string }) => {
+        console.log(`Someone join room ${ data.roomId }`);
+        obs.next(data);
+      }); */
+
       return () => {
         this.socket.disconnect();
       };
@@ -40,6 +45,7 @@ export class WebsocketService {
     const observer = {
       next: (data: Object) => {
         this.socket.emit('message', JSON.stringify(data));
+        // this.socket.emit('join', JSON.stringify(data));
       },
     };
 
