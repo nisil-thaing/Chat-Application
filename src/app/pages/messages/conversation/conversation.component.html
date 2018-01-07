@@ -16,6 +16,6 @@
     </div>
   </div>
   <div class="message-control">
-    <input type="text" placeholder="Type a message..." [(ngModel)]="chatMessage" (keyup.enter)="onChatSubmit()">
+    <input type="text" placeholder="Type a message..." [(ngModel)]="chatMessage" (ngModelChange)="onChangeMessage($event)" (keyup.enter)="onChatSubmit()">
   </div>
 </div>

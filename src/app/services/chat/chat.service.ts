@@ -26,8 +26,16 @@ export class ChatService {
 
   // Our simplified interface for sending
   // messages back to our socket.io server
-  sendMsg(msg) {
-    this.messages.next(msg);
+  sendMsg(data: { user: string, roomId: string, message: string }) {
+    this.messages.next({ event: 'message', data: data });
+  }
+
+  joinRoom(data: { roomId: string, user: string }) {
+    this.messages.next({ event: 'join', data: data });
+  }
+
+  isTyping() {
+    this.messages.next({ event: 'typping', data: {} });
   }
 
   fetchRooms(): Observable<Array<ChatRoom>> {

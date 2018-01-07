@@ -24,15 +24,20 @@ export class WebsocketService {
     // We define our observable which will observe any incoming messages
     // from our socket.io server.
     const observable = new Observable(obs => {
-      this.socket.on('message', (data) => {
+      this.socket.on('message', data => {
         console.log('Received message from Websocket Server');
         obs.next(data);
       });
 
-      /* this.socket.on('join', (data: { roomId: string }) => {
-        console.log(`Someone join room ${ data.roomId }`);
+      this.socket.on('join', data => {
+        console.log('Someone join room');
         obs.next(data);
-      }); */
+      });
+
+      this.socket.on('typping', data => {
+        console.log('Someone is typing...');
+        obs.next(data);
+      });
 
       return () => {
         this.socket.disconnect();
@@ -43,9 +48,8 @@ export class WebsocketService {
     // from our other components and send messages back to our
     // socket server whenever the `next()` method is called.
     const observer = {
-      next: (data: Object) => {
-        this.socket.emit('message', JSON.stringify(data));
-        // this.socket.emit('join', JSON.stringify(data));
+      next: (event: { event: string, data: Object }) => {
+        this.socket.emit(event.event, JSON.stringify(event.data));
       },
     };
 

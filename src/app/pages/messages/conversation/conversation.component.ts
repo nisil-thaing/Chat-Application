@@ -1,6 +1,8 @@
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { ChatService } from '../../../services/chat/chat.service';
 
+import { debounce } from 'lodash';
+
 import { Subscription } from 'rxjs/Subscription';
 
 @Component({
@@ -10,7 +12,7 @@ import { Subscription } from 'rxjs/Subscription';
 })
 export class ConversationComponent implements OnInit, OnDestroy {
   chatMessage: string;
-  chatActionStream$: Subscription;
+  // chatActionStream$: Subscription;
   messages: any = [];
   userMessages: any = {
     id: '',
@@ -21,6 +23,10 @@ export class ConversationComponent implements OnInit, OnDestroy {
     data: []
   };
 
+  onChangeMessage = debounce(() => {
+    this._chatService.isTyping();
+  }, 100);
+
   @Input() currentUser: any = {};
   @Input() selectedRoom: any = {};
 
@@ -29,15 +35,15 @@ export class ConversationComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.userMessages.id = this.currentUser._id;
 
-    this.chatActionStream$ = this._chatService.messages.subscribe(msg => {
+    /* this.chatActionStream$ = this._chatService.messages.subscribe(msg => {
       console.log(msg);
-    });
+    }); */
   }
 
   ngOnDestroy() {
-    if (this.chatActionStream$ && this.chatActionStream$.unsubscribe) {
+    /* if (this.chatActionStream$ && this.chatActionStream$.unsubscribe) {
       this.chatActionStream$.unsubscribe();
-    }
+    } */
   }
 
   onChatSubmit() {
@@ -55,7 +61,7 @@ export class ConversationComponent implements OnInit, OnDestroy {
       this._chatService.sendMsg({
         message: this.chatMessage,
         roomId: this.selectedRoom._id,
-        userId: this.currentUser._id
+        user: this.currentUser._id
       });
 
       this.chatMessage = '';
