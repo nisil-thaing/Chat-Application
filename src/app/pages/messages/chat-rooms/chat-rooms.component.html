@@ -1,6 +1,6 @@
 <div class="chat-rooms-wrapper col-xs-3">
   <div class="control-bar">
-    <div class="dropdown settings-btn pull-left">
+    <div class="dropdown settings-btn pull-left" style="visibility: hidden;">
       <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownConfig" data-toggle="dropdown" aria-haspopup="true"
         aria-expanded="false">
         <i class="fa fa-cog" aria-hidden="true"></i>
@@ -14,10 +14,10 @@
     <h4 class="title" align="center">Messages</h4>
     <div class="dropdown add-new-btn pull-right">
       <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownAddNew" data-toggle="dropdown" aria-haspopup="true"
-        aria-expanded="false">
+        aria-expanded="false" (click)="onAddNewRoom($event)">
         <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
       </button>
-      <div class="dropdown-menu" aria-labelledby="dropdownAddNew">
+      <div class="dropdown-menu hidden" aria-labelledby="dropdownAddNew">
         <a class="dropdown-item" href="#">Action</a>
         <a class="dropdown-item" href="#">Another action</a>
         <a class="dropdown-item" href="#">Something else here</a>
@@ -33,7 +33,7 @@
       <span>Conversations</span>
     </div>
     <ul class="contacts">
-      <li class="contact-item" *ngFor="let room of chatRooms$ | async" (click)="$event.stopPropagation(); joinRoom.emit({ e: $event, room: room })" [class.selected]="selectedRoom && selectedRoom._id == room._id">
+      <li class="contact-item" *ngFor="let room of chatRooms" (click)="$event.stopPropagation(); joinRoom.emit({ e: $event, room: room })" [class.selected]="selectedRoom && selectedRoom._id == room._id">
         <a>
           <div class="avatar pull-left"></div>
           <div class="short-content pull-right">

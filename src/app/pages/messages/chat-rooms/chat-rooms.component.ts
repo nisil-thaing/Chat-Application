@@ -10,12 +10,19 @@ import { ChatRoom } from '../../../models';
   styleUrls: ['./chat-rooms.component.scss']
 })
 export class ChatRoomsComponent {
-  chatRooms$: Observable<Array<ChatRoom>> = this._chatService.fetchRooms();
-
   @Input() selectedRoom: any;
+  @Input() chatRooms: Array<ChatRoom>;
   @Output() joinRoom: EventEmitter<any>;
+  @Output() addNewRoom: EventEmitter<any>;
 
   constructor(private _chatService: ChatService) {
     this.joinRoom = new EventEmitter();
+    this.addNewRoom = new EventEmitter();
+  }
+
+  onAddNewRoom(e) {
+    e.stopPropagation();
+
+    this.addNewRoom.emit({ event: e });
   }
 }

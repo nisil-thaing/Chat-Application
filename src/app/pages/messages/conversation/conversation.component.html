@@ -6,7 +6,7 @@
     </div>
   </div>
   <div class="conversation-content">
-    <div *ngFor="let message of messages"
+    <div *ngFor="let message of data"
       [class.parner-messages-wrapper]="message.id != currentUser._id"
       [class.user-messages-wrapper]="message.id == currentUser._id">
       <div class="avatar" *ngIf="message.id != currentUser._id"></div>

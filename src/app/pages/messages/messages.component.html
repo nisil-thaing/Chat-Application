@@ -1,9 +1,16 @@
 <div class="messages-wrapper">
   <app-chat-rooms
+    [chatRooms]="chatRooms"
     [selectedRoom]="selectedRoom"
-    (joinRoom)="onJoinRoom($event)">
+    (joinRoom)="onJoinRoom($event)"
+    (addNewRoom)="onAddNewRoom($event)">
   </app-chat-rooms>
+  <div class="add-room-wrapper col-xs-9" *ngIf="isShowAddRoomInput">
+    <input type="text" placeholder="Type new room name..." [(ngModel)]="newRoomName" (keyup.enter)="onSaveNewRoom()">
+  </div>
   <app-conversation
+    [class.hidden]="isShowAddRoomInput"
+    [data]="messages"
     [currentUser]="currentUser"
     [selectedRoom]="selectedRoom">
   </app-conversation>

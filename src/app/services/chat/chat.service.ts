@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Subject } from 'rxjs/Subject';
 
 import { WebsocketService } from '../web-socket/web-socket.service';
@@ -40,9 +40,20 @@ export class ChatService {
 
   fetchRooms(): Observable<Array<ChatRoom>> {
     return this._httpClient.get('/rooms', { observe: 'response' })
-      .map((response: any) => {
+      .map((response: HttpResponse<Array<ChatRoom>>) => {
         if (response.status !== HTTP_STATUS.SUCCESS) {
           return [];
+        }
+
+        return response.body;
+      });
+  }
+
+  saveNewRoom(params: { name: string }): Observable<ChatRoom> {
+    return this._httpClient.post('/rooms', params, { observe: 'response' })
+      .map((response: HttpResponse<ChatRoom>) => {
+        if (response.status !== HTTP_STATUS.SUCCESS) {
+          return null;
         }
 
         return response.body;
