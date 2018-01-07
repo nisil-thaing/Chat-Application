@@ -15,11 +15,13 @@ import { AuthenticationService } from './services';
 import { JWTInterceptor } from './helpers/jwt-interceptor';
 import { ChatService } from './services/chat/chat.service';
 import { WebsocketService } from './services/web-socket/web-socket.service';
+import { AuthGuard } from './helpers/auth.guard';
 
 export const appRoutes = [
   {
     path: 'messages',
     component: MessagesComponent,
+    canActivate: [AuthGuard],
     data: {
       title: 'Messages'
     },
@@ -70,6 +72,7 @@ export const appRoutes = [
     AuthenticationService,
     WebsocketService,
     ChatService,
+    AuthGuard,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: JWTInterceptor,
