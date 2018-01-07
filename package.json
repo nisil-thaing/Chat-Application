@@ -33,6 +33,10 @@
     "socket.io-client": "^2.0.4",
     "zone.js": "^0.8.14"
   },
+  "engines": {
+    "node": "8.9.1",
+    "npm": "5.6.0"
+  },
   "devDependencies": {
     "@angular/cli": "^1.6.3",
     "@angular/compiler-cli": "5.0.0",
