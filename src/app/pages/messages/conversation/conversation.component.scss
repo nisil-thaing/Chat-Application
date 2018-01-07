@@ -16,7 +16,7 @@
   .conversation-content {
     border-bottom: 1px solid;
     height: calc(100vh - 98px);
-    padding: 0 12px;
+    padding: 12px;
 
     > div {
       &:not(:last-child) {
@@ -38,6 +38,8 @@
 
     .parner-messages-wrapper {
       position: relative;
+      text-align: left;
+      color: rgba(0, 0, 0, 1);
 
       .avatar {
         width: 28px;
@@ -71,6 +73,9 @@
     }
 
     .user-messages-wrapper {
+      text-align: right;
+      color: #fff;
+
       .message-item {
         &:not(:first-child) {
           span {

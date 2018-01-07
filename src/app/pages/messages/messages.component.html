@@ -4,6 +4,7 @@
     (joinRoom)="onJoinRoom($event)">
   </app-chat-rooms>
   <app-conversation
+    [currentUser]="currentUser"
     [selectedRoom]="selectedRoom">
   </app-conversation>
 </div>

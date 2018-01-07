@@ -11,12 +11,24 @@ import { Subscription } from 'rxjs/Subscription';
 export class ConversationComponent implements OnInit, OnDestroy {
   chatMessage: string;
   chatActionStream$: Subscription;
+  messages: any = [];
+  userMessages: any = {
+    id: '',
+    data: []
+  };
+  parnerMessage: any = {
+    id: '',
+    data: []
+  };
 
+  @Input() currentUser: any = {};
   @Input() selectedRoom: any = {};
 
   constructor(private _chatService: ChatService) {}
 
   ngOnInit() {
+    this.userMessages.id = this.currentUser._id;
+
     this.chatActionStream$ = this._chatService.messages.subscribe(msg => {
       console.log(msg);
     });
@@ -29,12 +41,23 @@ export class ConversationComponent implements OnInit, OnDestroy {
   }
 
   onChatSubmit() {
-    if (this.selectedRoom._id && this.chatMessage) {
+    if (this.currentUser._id && this.selectedRoom._id && this.chatMessage) {
+
+      if (this.messages.length > 0 && this.messages[this.messages.length - 1].id === this.currentUser._id) {
+        this.messages[this.messages.length - 1].data.push(this.chatMessage);
+      } else {
+        this.messages.push({
+          id: this.currentUser._id,
+          data: [this.chatMessage]
+        });
+      }
+
       this._chatService.sendMsg({
         message: this.chatMessage,
-        roomId: this.selectedRoom._id
+        roomId: this.selectedRoom._id,
+        userId: this.currentUser._id
       });
-      console.log(this.chatMessage);
+
       this.chatMessage = '';
     }
   }

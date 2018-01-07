@@ -6,48 +6,12 @@
     </div>
   </div>
   <div class="conversation-content">
-    <div class="parner-messages-wrapper" align="left">
-      <div class="avatar"></div>
-      <div class="message-item">
-        <span>Something</span>
-      </div>
-      <div class="message-item">
-        <span>Something</span>
-      </div>
-      <div class="message-item">
-        <span>Something</span>
-      </div>
-      <div class="message-item">
-        <span>Something</span>
-      </div>
-      <div class="message-item">
-        <span>Something</span>
-      </div>
-      <div class="message-item">
-        <span>Something</span>
-      </div>
-    </div>
-    <div class="user-messages-wrapper" align="right">
-      <div class="message-item">
-        <span>Something</span>
-      </div>
-      <div class="message-item">
-        <span>Something</span>
-      </div>
-      <div class="message-item">
-        <span>Something</span>
-      </div>
-      <div class="message-item">
-        <span>Something</span>
-      </div>
-      <div class="message-item">
-        <span>Something</span>
-      </div>
-      <div class="message-item">
-        <span>Something</span>
-      </div>
-      <div class="message-item">
-        <span>Something</span>
+    <div *ngFor="let message of messages"
+      [class.parner-messages-wrapper]="message.id != currentUser._id"
+      [class.user-messages-wrapper]="message.id == currentUser._id">
+      <div class="avatar" *ngIf="message.id != currentUser._id"></div>
+      <div class="message-item" *ngFor="let messageItem of message.data">
+        <span>{{ messageItem }}</span>
       </div>
     </div>
   </div>
