@@ -14,14 +14,14 @@ export class ConversationComponent implements OnInit {
   chatMessage: string;
   // chatActionStream$: Subscription;
   messages: any = [];
-  userMessages: any = {
+  /* userMessages: any = {
     id: '',
     data: []
   };
   parnerMessage: any = {
     id: '',
     data: []
-  };
+  }; */
 
   onChangeMessage = debounce(() => {
     this._chatService.isTyping();
@@ -34,20 +34,20 @@ export class ConversationComponent implements OnInit {
   constructor(private _chatService: ChatService) {}
 
   ngOnInit() {
-    this.userMessages.id = this.currentUser._id;
+    // this.userMessages.id = this.currentUser._id;
   }
 
   onChatSubmit() {
     if (this.currentUser._id && this.selectedRoom._id && this.chatMessage) {
 
-      /* if (this.messages.length > 0 && this.messages[this.messages.length - 1].id === this.currentUser._id) {
-        this.messages[this.messages.length - 1].data.push(this.chatMessage);
+      if (this.data.length > 0 && this.data[this.data.length - 1].id === this.currentUser._id) {
+        this.data[this.data.length - 1].data.push(this.chatMessage);
       } else {
-        this.messages.push({
+        this.data.push({
           id: this.currentUser._id,
           data: [this.chatMessage]
         });
-      } */
+      }
 
       this._chatService.sendMsg({
         message: this.chatMessage,

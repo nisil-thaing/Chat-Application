@@ -10,7 +10,7 @@
   </div>
   <app-conversation
     [class.hidden]="isShowAddRoomInput"
-    [data]="messages"
+    [data]="messages[selectedRoom._id]"
     [currentUser]="currentUser"
     [selectedRoom]="selectedRoom">
   </app-conversation>
