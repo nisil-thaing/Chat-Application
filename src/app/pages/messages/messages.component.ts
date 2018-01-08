@@ -4,7 +4,7 @@ import { Subscription } from 'rxjs/Subscription';
 import 'rxjs/add/operator/scan';
 
 import { ChatService } from '../../services/chat/chat.service';
-import { ChatRoom } from '../../models';
+import { ChatRoom, ChatMessage } from '../../models';
 
 @Component({
   selector: 'app-messages',
@@ -43,6 +43,33 @@ export class MessagesComponent implements OnInit, OnDestroy {
     }
   }
 
+  assignInitRoomMessages(pastMessages: Array<ChatMessage>, roomId: string) {
+    if (!roomId || !pastMessages || pastMessages.length === 0) {
+      return;
+    }
+
+    pastMessages.forEach(msg => {
+      const userId = msg.author._id;
+
+      if (this.messages[roomId] && this.messages[roomId].length > 0 && this.messages[roomId][0].id === userId) {
+        this.messages[roomId][0].data.unshift(msg.body);
+      } else {
+        if (!this.messages[roomId]) {
+          this.messages[roomId] = [];
+        }
+
+        this.messages[roomId].unshift({
+          id: userId,
+          data: [msg.body]
+        });
+      }
+    });
+
+    this.scrollToConversationBottom();
+
+    return;
+  }
+
   onChatSubmit(e) {
     if (!e.message) {
       return;
@@ -61,12 +88,18 @@ export class MessagesComponent implements OnInit, OnDestroy {
 
   onJoinRoom(e) {
     if (this.currentUser._id && e.room && e.room._id) {
+      if (!this.messages[e.room._id]) {
+        const pastMessages$: Observable<Array<ChatMessage>> = this._chatService.fetchPastMessages({ roomId: e.room._id });
+
+        pastMessages$.subscribe((pastMessages: Array<ChatMessage>) => {
+          this.assignInitRoomMessages(pastMessages, e.room._id);
+        });
+      }
+
       this.selectedRoom = e.room;
       this._chatService.joinRoom({ user: this.currentUser._id, roomId: e.room._id });
 
-      if (!this.messages[this.selectedRoom._id]) {
-        this.messages[this.selectedRoom._id] = [];
-      }
+      this.scrollToConversationBottom();
     }
   }
 
@@ -102,6 +135,10 @@ export class MessagesComponent implements OnInit, OnDestroy {
       });
     }
 
+    this.scrollToConversationBottom();
+  }
+
+  scrollToConversationBottom() {
     setTimeout(() => {
       if (this.conversationContent
         && this.conversationContent._elRef

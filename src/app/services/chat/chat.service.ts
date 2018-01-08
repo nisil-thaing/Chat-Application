@@ -4,7 +4,7 @@ import { Subject } from 'rxjs/Subject';
 
 import { WebsocketService } from '../web-socket/web-socket.service';
 import { Observable } from 'rxjs/Observable';
-import { ChatRoom } from '../../models';
+import { ChatRoom, ChatMessage } from '../../models';
 import { HTTP_STATUS } from '../../config/http-client.config';
 
 @Injectable()
@@ -49,12 +49,16 @@ export class ChatService {
       });
   }
 
-  /* fetchPastMessages(params: { roomId: string }): Observable<any> {
-    return this._httpClient.get(`/rooms/${ params.roomId }/messages`)
-      .map((response: any) => {
+  fetchPastMessages(params: { roomId: string }): Observable<Array<ChatMessage>> {
+    return this._httpClient.get(`/messages?roomId=${ params.roomId }`, { observe: 'response' })
+      .map((response: HttpResponse<Array<ChatMessage>>) => {
+        if (response.status !== HTTP_STATUS.SUCCESS) {
+          return [];
+        }
 
+        return response.body;
       });
-  } */
+  }
 
   saveNewRoom(params: { name: string }): Observable<ChatRoom> {
     return this._httpClient.post('/rooms', params, { observe: 'response' })
