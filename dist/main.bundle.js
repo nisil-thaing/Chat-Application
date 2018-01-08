@@ -547,7 +547,7 @@ exports = module.exports = __webpack_require__("../../../../css-loader/lib/css-b
 
 
 // module
-exports.push([module.i, ".conversation-wrapper {\n  padding: 0; }\n  .conversation-wrapper .heading-control {\n    border-bottom: 1px solid; }\n    .conversation-wrapper .heading-control .parner-info {\n      padding: 4px 0; }\n      .conversation-wrapper .heading-control .parner-info p {\n        margin: 0; }\n  .conversation-wrapper .conversation-content {\n    border-bottom: 1px solid;\n    height: calc(100vh - 98px);\n    padding: 12px; }\n    .conversation-wrapper .conversation-content > div:not(:last-child) {\n      margin-bottom: 15px; }\n    .conversation-wrapper .conversation-content .message-item:not(:last-child) {\n      margin-bottom: 2px; }\n    .conversation-wrapper .conversation-content .message-item span {\n      padding: 6px 12px;\n      display: inline-block;\n      border-radius: 16px; }\n    .conversation-wrapper .conversation-content .parner-messages-wrapper {\n      position: relative;\n      text-align: left;\n      color: black; }\n      .conversation-wrapper .conversation-content .parner-messages-wrapper .avatar {\n        width: 28px;\n        height: 28px;\n        background-color: grey;\n        border-radius: 50%;\n        position: absolute;\n        left: 0;\n        bottom: 0; }\n      .conversation-wrapper .conversation-content .parner-messages-wrapper .message-item {\n        margin-left: 36px; }\n        .conversation-wrapper .conversation-content .parner-messages-wrapper .message-item:not(:nth-child(2)) span {\n          border-top-left-radius: 0; }\n        .conversation-wrapper .conversation-content .parner-messages-wrapper .message-item:not(:last-child) span {\n          border-bottom-left-radius: 0; }\n        .conversation-wrapper .conversation-content .parner-messages-wrapper .message-item span {\n          background-color: #f1f0f0; }\n    .conversation-wrapper .conversation-content .user-messages-wrapper {\n      text-align: right;\n      color: #fff; }\n      .conversation-wrapper .conversation-content .user-messages-wrapper .message-item:not(:first-child) span {\n        border-top-right-radius: 0; }\n      .conversation-wrapper .conversation-content .user-messages-wrapper .message-item:not(:last-child) span {\n        border-bottom-right-radius: 0; }\n      .conversation-wrapper .conversation-content .user-messages-wrapper .message-item span {\n        background-color: #0084ff; }\n  .conversation-wrapper .message-control {\n    height: 49px;\n    overflow: scroll; }\n    .conversation-wrapper .message-control input {\n      width: 100%;\n      height: 100%;\n      border: none;\n      padding: 0 12px; }\n", ""]);
+exports.push([module.i, ".conversation-wrapper {\n  padding: 0; }\n  .conversation-wrapper .heading-control {\n    border-bottom: 1px solid; }\n    .conversation-wrapper .heading-control .parner-info {\n      padding: 4px 0; }\n      .conversation-wrapper .heading-control .parner-info p {\n        margin: 0; }\n  .conversation-wrapper .conversation-content {\n    border-bottom: 1px solid;\n    height: calc(100vh - 98px);\n    padding: 12px;\n    overflow: scroll; }\n    .conversation-wrapper .conversation-content > div:not(:last-child) {\n      margin-bottom: 15px; }\n    .conversation-wrapper .conversation-content .message-item:not(:last-child) {\n      margin-bottom: 2px; }\n    .conversation-wrapper .conversation-content .message-item span {\n      padding: 6px 12px;\n      display: inline-block;\n      border-radius: 16px; }\n    .conversation-wrapper .conversation-content .parner-messages-wrapper {\n      position: relative;\n      text-align: left;\n      color: black; }\n      .conversation-wrapper .conversation-content .parner-messages-wrapper .avatar {\n        width: 28px;\n        height: 28px;\n        background-color: grey;\n        border-radius: 50%;\n        position: absolute;\n        left: 0;\n        bottom: 0; }\n      .conversation-wrapper .conversation-content .parner-messages-wrapper .message-item {\n        margin-left: 36px; }\n        .conversation-wrapper .conversation-content .parner-messages-wrapper .message-item:not(:nth-child(2)) span {\n          border-top-left-radius: 0; }\n        .conversation-wrapper .conversation-content .parner-messages-wrapper .message-item:not(:last-child) span {\n          border-bottom-left-radius: 0; }\n        .conversation-wrapper .conversation-content .parner-messages-wrapper .message-item span {\n          background-color: #f1f0f0; }\n    .conversation-wrapper .conversation-content .user-messages-wrapper {\n      text-align: right;\n      color: #fff; }\n      .conversation-wrapper .conversation-content .user-messages-wrapper .message-item:not(:first-child) span {\n        border-top-right-radius: 0; }\n      .conversation-wrapper .conversation-content .user-messages-wrapper .message-item:not(:last-child) span {\n        border-bottom-right-radius: 0; }\n      .conversation-wrapper .conversation-content .user-messages-wrapper .message-item span {\n        background-color: #0084ff; }\n  .conversation-wrapper .message-control {\n    height: 49px; }\n    .conversation-wrapper .message-control input {\n      width: 100%;\n      height: 100%;\n      border: none;\n      padding: 0 12px; }\n", ""]);
 
 // exports
 
@@ -582,16 +582,7 @@ var ConversationComponent = (function () {
     function ConversationComponent(_chatService) {
         var _this = this;
         this._chatService = _chatService;
-        // chatActionStream$: Subscription;
         this.messages = [];
-        /* userMessages: any = {
-          id: '',
-          data: []
-        };
-        parnerMessage: any = {
-          id: '',
-          data: []
-        }; */
         this.onChangeMessage = Object(__WEBPACK_IMPORTED_MODULE_2_lodash__["debounce"])(function () {
             _this._chatService.isTyping();
         }, 100);
@@ -599,9 +590,6 @@ var ConversationComponent = (function () {
         this.currentUser = {};
         this.selectedRoom = {};
     }
-    ConversationComponent.prototype.ngOnInit = function () {
-        // this.userMessages.id = this.currentUser._id;
-    };
     ConversationComponent.prototype.onChatSubmit = function () {
         if (this.currentUser._id && this.selectedRoom._id && this.chatMessage) {
             if (this.data.length > 0 && this.data[this.data.length - 1].id === this.currentUser._id) {

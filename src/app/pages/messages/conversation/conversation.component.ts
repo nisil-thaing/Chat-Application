@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { ChatService } from '../../../services/chat/chat.service';
 
 import { debounce } from 'lodash';
@@ -10,18 +10,9 @@ import { Subscription } from 'rxjs/Subscription';
   templateUrl: './conversation.component.html',
   styleUrls: ['./conversation.component.scss']
 })
-export class ConversationComponent implements OnInit {
+export class ConversationComponent {
   chatMessage: string;
-  // chatActionStream$: Subscription;
   messages: any = [];
-  /* userMessages: any = {
-    id: '',
-    data: []
-  };
-  parnerMessage: any = {
-    id: '',
-    data: []
-  }; */
 
   onChangeMessage = debounce(() => {
     this._chatService.isTyping();
@@ -32,10 +23,6 @@ export class ConversationComponent implements OnInit {
   @Input() selectedRoom: any = {};
 
   constructor(private _chatService: ChatService) {}
-
-  ngOnInit() {
-    // this.userMessages.id = this.currentUser._id;
-  }
 
   onChatSubmit() {
     if (this.currentUser._id && this.selectedRoom._id && this.chatMessage) {

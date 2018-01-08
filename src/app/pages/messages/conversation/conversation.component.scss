@@ -17,6 +17,7 @@
     border-bottom: 1px solid;
     height: calc(100vh - 98px);
     padding: 12px;
+    overflow: scroll;
 
     > div {
       &:not(:last-child) {
@@ -98,7 +99,6 @@
 
   .message-control {
     height: 49px;
-    overflow: scroll;
 
     input {
       width: 100%;
