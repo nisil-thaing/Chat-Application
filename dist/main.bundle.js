@@ -96,6 +96,7 @@ var AppComponent = (function () {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__services_chat_chat_service__ = __webpack_require__("../../../../../src/app/services/chat/chat.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_15__services_web_socket_web_socket_service__ = __webpack_require__("../../../../../src/app/services/web-socket/web-socket.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_16__helpers_auth_guard__ = __webpack_require__("../../../../../src/app/helpers/auth.guard.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_17__resolvers_messages_chat_rooms_resolver__ = __webpack_require__("../../../../../src/app/resolvers/messages/chat-rooms.resolver.ts");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -119,11 +120,15 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 
 
 
+
 var appRoutes = [
     {
         path: 'messages',
         component: __WEBPACK_IMPORTED_MODULE_7__pages_messages_messages_component__["a" /* MessagesComponent */],
         canActivate: [__WEBPACK_IMPORTED_MODULE_16__helpers_auth_guard__["a" /* AuthGuard */]],
+        resolve: {
+            chatRooms: __WEBPACK_IMPORTED_MODULE_17__resolvers_messages_chat_rooms_resolver__["a" /* ChatRoomsResolver */]
+        },
         data: {
             title: 'Messages'
         },
@@ -171,7 +176,7 @@ var AppModule = (function () {
                 __WEBPACK_IMPORTED_MODULE_2__angular_common_http__["c" /* HttpClientModule */],
                 __WEBPACK_IMPORTED_MODULE_4__angular_forms__["c" /* FormsModule */],
                 __WEBPACK_IMPORTED_MODULE_4__angular_forms__["d" /* ReactiveFormsModule */],
-                __WEBPACK_IMPORTED_MODULE_3__angular_router__["b" /* RouterModule */].forRoot(appRoutes)
+                __WEBPACK_IMPORTED_MODULE_3__angular_router__["c" /* RouterModule */].forRoot(appRoutes)
             ],
             providers: [
                 __WEBPACK_IMPORTED_MODULE_12__services__["a" /* AuthenticationService */],
@@ -179,6 +184,7 @@ var AppModule = (function () {
                 __WEBPACK_IMPORTED_MODULE_15__services_web_socket_web_socket_service__["a" /* WebsocketService */],
                 __WEBPACK_IMPORTED_MODULE_14__services_chat_chat_service__["a" /* ChatService */],
                 __WEBPACK_IMPORTED_MODULE_16__helpers_auth_guard__["a" /* AuthGuard */],
+                __WEBPACK_IMPORTED_MODULE_17__resolvers_messages_chat_rooms_resolver__["a" /* ChatRoomsResolver */],
                 {
                     provide: __WEBPACK_IMPORTED_MODULE_2__angular_common_http__["a" /* HTTP_INTERCEPTORS */],
                     useClass: __WEBPACK_IMPORTED_MODULE_13__helpers_jwt_interceptor__["a" /* JWTInterceptor */],
@@ -278,7 +284,7 @@ var AuthGuard = (function () {
     };
     AuthGuard = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["A" /* Injectable */])(),
-        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__angular_router__["a" /* Router */]])
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__angular_router__["b" /* Router */]])
     ], AuthGuard);
     return AuthGuard;
 }());
@@ -438,7 +444,7 @@ var LoginComponent = (function () {
             template: __webpack_require__("../../../../../src/app/pages/login/login.component.html"),
             styles: [__webpack_require__("../../../../../src/app/pages/login/login.component.scss")]
         }),
-        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_3__angular_router__["a" /* Router */],
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_3__angular_router__["b" /* Router */],
             __WEBPACK_IMPORTED_MODULE_2__services_index__["a" /* AuthenticationService */]])
     ], LoginComponent);
     return LoginComponent;
@@ -535,7 +541,7 @@ var ChatRoomsComponent = (function () {
 /***/ "../../../../../src/app/pages/messages/conversation/conversation.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"conversation-wrapper col-xs-9\" *ngIf=\"selectedRoom && selectedRoom._id\">\n  <div class=\"heading-control\" align=\"center\">\n    <div class=\"parner-info\">\n      <span>{{ selectedRoom?.name }}</span>\n      <p>{{ selectedRoom?.updatedAt }}</p>\n    </div>\n  </div>\n  <div id=\"conversation-content\" class=\"conversation-content\">\n    <div *ngFor=\"let message of data\"\n      [class.parner-messages-wrapper]=\"message.id != currentUser._id\"\n      [class.user-messages-wrapper]=\"message.id == currentUser._id\">\n      <div class=\"avatar\" *ngIf=\"message.id != currentUser._id\"></div>\n      <div class=\"message-item\" *ngFor=\"let messageItem of message.data\">\n        <span>{{ messageItem }}</span>\n      </div>\n    </div>\n  </div>\n  <div class=\"message-control\">\n    <input type=\"text\" placeholder=\"Type a message...\" [(ngModel)]=\"chatMessage\" (ngModelChange)=\"onChangeMessage($event)\" (keyup.enter)=\"onChatSubmit()\">\n  </div>\n</div>\n"
+module.exports = "<div class=\"conversation-wrapper col-xs-9\" *ngIf=\"selectedRoom && selectedRoom._id\">\n  <div class=\"heading-control\" align=\"center\">\n    <div class=\"parner-info\">\n      <span>{{ selectedRoom?.name }}</span>\n      <p>{{ selectedRoom?.updatedAt }}</p>\n    </div>\n  </div>\n  <div id=\"conversation-content\" class=\"conversation-content\" [class.loading]=\"isLoadingData\">\n    <div class=\"loading\" [class.hidden]=\"!isLoadingData\">\n      <i class=\"fa fa-spinner fa-spin\" aria-hidden=\"true\"></i>\n    </div>\n    <div *ngFor=\"let message of data\"\n      [class.parner-messages-wrapper]=\"message.id != currentUser._id\"\n      [class.user-messages-wrapper]=\"message.id == currentUser._id\">\n      <div class=\"avatar\" *ngIf=\"message.id != currentUser._id\"></div>\n      <div class=\"message-item\" *ngFor=\"let messageItem of message.data\">\n        <span>{{ messageItem }}</span>\n      </div>\n    </div>\n  </div>\n  <div class=\"message-control\" [class.loading]=\"isLoadingData\">\n    <input type=\"text\" placeholder=\"Type a message...\" [(ngModel)]=\"chatMessage\" (ngModelChange)=\"onChangeMessage($event)\" (keyup.enter)=\"onChatSubmit()\" [disabled]=\"isLoadingData\">\n  </div>\n</div>\n"
 
 /***/ }),
 
@@ -547,7 +553,7 @@ exports = module.exports = __webpack_require__("../../../../css-loader/lib/css-b
 
 
 // module
-exports.push([module.i, ".conversation-wrapper {\n  padding: 0; }\n  .conversation-wrapper .heading-control {\n    border-bottom: 1px solid; }\n    .conversation-wrapper .heading-control .parner-info {\n      padding: 4px 0; }\n      .conversation-wrapper .heading-control .parner-info p {\n        margin: 0; }\n  .conversation-wrapper .conversation-content {\n    border-bottom: 1px solid;\n    height: calc(100vh - 98px);\n    padding: 12px;\n    overflow: scroll; }\n    .conversation-wrapper .conversation-content > div:not(:last-child) {\n      margin-bottom: 15px; }\n    .conversation-wrapper .conversation-content .message-item:not(:last-child) {\n      margin-bottom: 2px; }\n    .conversation-wrapper .conversation-content .message-item span {\n      padding: 6px 12px;\n      display: inline-block;\n      border-radius: 16px; }\n    .conversation-wrapper .conversation-content .parner-messages-wrapper {\n      position: relative;\n      text-align: left;\n      color: black; }\n      .conversation-wrapper .conversation-content .parner-messages-wrapper .avatar {\n        width: 28px;\n        height: 28px;\n        background-color: grey;\n        border-radius: 50%;\n        position: absolute;\n        left: 0;\n        bottom: 0; }\n      .conversation-wrapper .conversation-content .parner-messages-wrapper .message-item {\n        margin-left: 36px; }\n        .conversation-wrapper .conversation-content .parner-messages-wrapper .message-item:not(:nth-child(2)) span {\n          border-top-left-radius: 0; }\n        .conversation-wrapper .conversation-content .parner-messages-wrapper .message-item:not(:last-child) span {\n          border-bottom-left-radius: 0; }\n        .conversation-wrapper .conversation-content .parner-messages-wrapper .message-item span {\n          background-color: #f1f0f0; }\n    .conversation-wrapper .conversation-content .user-messages-wrapper {\n      text-align: right;\n      color: #fff; }\n      .conversation-wrapper .conversation-content .user-messages-wrapper .message-item:not(:first-child) span {\n        border-top-right-radius: 0; }\n      .conversation-wrapper .conversation-content .user-messages-wrapper .message-item:not(:last-child) span {\n        border-bottom-right-radius: 0; }\n      .conversation-wrapper .conversation-content .user-messages-wrapper .message-item span {\n        background-color: #0084ff; }\n  .conversation-wrapper .message-control {\n    height: 49px; }\n    .conversation-wrapper .message-control input {\n      width: 100%;\n      height: 100%;\n      border: none;\n      padding: 0 12px; }\n", ""]);
+exports.push([module.i, ".conversation-wrapper {\n  padding: 0; }\n  .conversation-wrapper .heading-control {\n    border-bottom: 1px solid; }\n    .conversation-wrapper .heading-control .parner-info {\n      padding: 4px 0; }\n      .conversation-wrapper .heading-control .parner-info p {\n        margin: 0; }\n  .conversation-wrapper .conversation-content {\n    position: relative;\n    border-bottom: 1px solid;\n    height: calc(100vh - 98px);\n    padding: 12px;\n    overflow: scroll; }\n    .conversation-wrapper .conversation-content.loading {\n      background-color: #e8e8e8; }\n    .conversation-wrapper .conversation-content .loading {\n      font-size: 50px;\n      position: absolute;\n      top: 50%;\n      left: 50%;\n      -webkit-transform: translate(-50%, -50%);\n      transform: translate(-50%, -50%); }\n    .conversation-wrapper .conversation-content > div:not(:last-child) {\n      margin-bottom: 15px; }\n    .conversation-wrapper .conversation-content .message-item:not(:last-child) {\n      margin-bottom: 2px; }\n    .conversation-wrapper .conversation-content .message-item span {\n      padding: 6px 12px;\n      display: inline-block;\n      border-radius: 16px; }\n    .conversation-wrapper .conversation-content .parner-messages-wrapper {\n      position: relative;\n      text-align: left;\n      color: black; }\n      .conversation-wrapper .conversation-content .parner-messages-wrapper .avatar {\n        width: 28px;\n        height: 28px;\n        background-color: grey;\n        border-radius: 50%;\n        position: absolute;\n        left: 0;\n        bottom: 0; }\n      .conversation-wrapper .conversation-content .parner-messages-wrapper .message-item {\n        margin-left: 36px; }\n        .conversation-wrapper .conversation-content .parner-messages-wrapper .message-item:not(:nth-child(2)) span {\n          border-top-left-radius: 0; }\n        .conversation-wrapper .conversation-content .parner-messages-wrapper .message-item:not(:last-child) span {\n          border-bottom-left-radius: 0; }\n        .conversation-wrapper .conversation-content .parner-messages-wrapper .message-item span {\n          background-color: #f1f0f0; }\n    .conversation-wrapper .conversation-content .user-messages-wrapper {\n      text-align: right;\n      color: #fff; }\n      .conversation-wrapper .conversation-content .user-messages-wrapper .message-item:not(:first-child) span {\n        border-top-right-radius: 0; }\n      .conversation-wrapper .conversation-content .user-messages-wrapper .message-item:not(:last-child) span {\n        border-bottom-right-radius: 0; }\n      .conversation-wrapper .conversation-content .user-messages-wrapper .message-item span {\n        background-color: #0084ff; }\n  .conversation-wrapper .message-control {\n    height: 49px; }\n    .conversation-wrapper .message-control.loading input {\n      background-color: #e8e8e8; }\n    .conversation-wrapper .message-control input {\n      width: 100%;\n      height: 100%;\n      border: none;\n      padding: 0 12px; }\n", ""]);
 
 // exports
 
@@ -661,8 +667,9 @@ module.exports = module.exports.toString();
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return MessagesComponent; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_rxjs_add_operator_scan__ = __webpack_require__("../../../../rxjs/_esm5/add/operator/scan.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__services_chat_chat_service__ = __webpack_require__("../../../../../src/app/services/chat/chat.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_router__ = __webpack_require__("../../../router/esm5/router.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rxjs_add_operator_scan__ = __webpack_require__("../../../../rxjs/_esm5/add/operator/scan.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__services_chat_chat_service__ = __webpack_require__("../../../../../src/app/services/chat/chat.service.ts");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -675,24 +682,27 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
+
 var MessagesComponent = (function () {
-    function MessagesComponent(_chatService) {
+    function MessagesComponent(_route, _chatService) {
+        this._route = _route;
         this._chatService = _chatService;
         // get current user, temporary by local storage
         this.currentUser = JSON.parse(localStorage.getItem('currentUser')) || {};
-        this.chatRooms$ = this._chatService.fetchRooms();
         this.selectedRoom = {};
         this.messages = {};
     }
     MessagesComponent.prototype.ngOnInit = function () {
         var _this = this;
+        this._route.data.subscribe(function (data) {
+            _this.chatRooms = data.chatRooms;
+        });
         this.joinRoomActionStream$ = this._chatService.messages.subscribe(function (res) {
             // temp - check message event
             if (_this.currentUser._id && res.room && res.body) {
                 _this.updateChatMessages(res.author._id, res.room, res.body);
             }
         });
-        this.chatRooms$.subscribe(function (res) { return _this.chatRooms = res; });
     };
     MessagesComponent.prototype.ngOnDestroy = function () {
         if (this.joinRoomActionStream$ && this.joinRoomActionStream$.unsubscribe) {
@@ -702,6 +712,7 @@ var MessagesComponent = (function () {
     MessagesComponent.prototype.assignInitRoomMessages = function (pastMessages, roomId) {
         var _this = this;
         if (!roomId || !pastMessages || pastMessages.length === 0) {
+            this.conversationContent.isLoadingData = false;
             return;
         }
         pastMessages.forEach(function (msg) {
@@ -719,6 +730,7 @@ var MessagesComponent = (function () {
                 });
             }
         });
+        this.conversationContent.isLoadingData = false;
         this.scrollToConversationBottom();
         return;
     };
@@ -738,6 +750,7 @@ var MessagesComponent = (function () {
         var _this = this;
         if (this.currentUser._id && e.room && e.room._id) {
             if (!this.messages[e.room._id]) {
+                this.conversationContent.isLoadingData = true;
                 var pastMessages$ = this._chatService.fetchPastMessages({ roomId: e.room._id });
                 pastMessages$.subscribe(function (pastMessages) {
                     _this.assignInitRoomMessages(pastMessages, e.room._id);
@@ -803,7 +816,8 @@ var MessagesComponent = (function () {
             template: __webpack_require__("../../../../../src/app/pages/messages/messages.component.html"),
             styles: [__webpack_require__("../../../../../src/app/pages/messages/messages.component.scss")]
         }),
-        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_2__services_chat_chat_service__["a" /* ChatService */]])
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__angular_router__["a" /* ActivatedRoute */],
+            __WEBPACK_IMPORTED_MODULE_3__services_chat_chat_service__["a" /* ChatService */]])
     ], MessagesComponent);
     return MessagesComponent;
 }());
@@ -975,10 +989,46 @@ var RegistrationComponent = (function () {
             template: __webpack_require__("../../../../../src/app/pages/registration/registration.component.html"),
             styles: [__webpack_require__("../../../../../src/app/pages/registration/registration.component.scss")]
         }),
-        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__angular_router__["a" /* Router */],
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__angular_router__["b" /* Router */],
             __WEBPACK_IMPORTED_MODULE_3__services__["b" /* UserService */]])
     ], RegistrationComponent);
     return RegistrationComponent;
+}());
+
+
+
+/***/ }),
+
+/***/ "../../../../../src/app/resolvers/messages/chat-rooms.resolver.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return ChatRoomsResolver; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__services_chat_chat_service__ = __webpack_require__("../../../../../src/app/services/chat/chat.service.ts");
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+
+
+var ChatRoomsResolver = (function () {
+    function ChatRoomsResolver(_chatService) {
+        this._chatService = _chatService;
+    }
+    ChatRoomsResolver.prototype.resolve = function (route, state) {
+        return this._chatService.fetchRooms();
+    };
+    ChatRoomsResolver = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["A" /* Injectable */])(),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__services_chat_chat_service__["a" /* ChatService */]])
+    ], ChatRoomsResolver);
+    return ChatRoomsResolver;
 }());
 
 
