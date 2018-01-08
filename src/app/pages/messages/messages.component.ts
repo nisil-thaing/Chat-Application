@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
 import 'rxjs/add/operator/scan';
@@ -22,28 +22,15 @@ export class MessagesComponent implements OnInit, OnDestroy {
   newRoomName: string;
   messages: any = {};
 
-  constructor(private _chatService: ChatService) {}
+  @ViewChild('conversationContent') private conversationContent: any;
+
+  constructor(private _chatService: ChatService) { }
 
   ngOnInit() {
-    this.joinRoomActionStream$ = this._chatService.messages.subscribe(res => {console.log(res);
+    this.joinRoomActionStream$ = this._chatService.messages.subscribe(res => {
       // temp - check message event
       if (this.currentUser._id && res.room && res.body) {
-        const roomId = res.room;
-
-        if (!this.messages[roomId]) {
-          this.messages[roomId] = [];
-        }
-
-        const currentRoomMessagesLength = this.messages[roomId].length;
-
-        if (currentRoomMessagesLength > 0 && this.messages[roomId][currentRoomMessagesLength - 1].id === res.author._id) {
-          this.messages[roomId][currentRoomMessagesLength - 1].data.push(res.body);
-        } else {
-          this.messages[roomId].push({
-            id: res.author._id,
-            data: [res.body]
-          });
-        }
+        this.updateChatMessages(res.author._id, res.room, res.body);
       }
     });
 
@@ -54,6 +41,22 @@ export class MessagesComponent implements OnInit, OnDestroy {
     if (this.joinRoomActionStream$ && this.joinRoomActionStream$.unsubscribe) {
       this.joinRoomActionStream$.unsubscribe();
     }
+  }
+
+  onChatSubmit(e) {
+    if (!e.message) {
+      return;
+    }
+
+    this.updateChatMessages(this.currentUser._id, this.selectedRoom._id, e.message);
+
+    this._chatService.sendMsg({
+      message: e.message,
+      roomId: this.selectedRoom._id,
+      user: this.currentUser._id
+    });
+
+    return;
   }
 
   onJoinRoom(e) {
@@ -81,6 +84,36 @@ export class MessagesComponent implements OnInit, OnDestroy {
           this.isShowAddRoomInput = false;
         });
     }
+  }
+
+  updateChatMessages(userId, roomId, message) {
+    if (!this.messages[roomId]) {
+      this.messages[roomId] = [];
+    }
+
+    const currentRoomMessagesLength = this.messages[roomId].length;
+
+    if (currentRoomMessagesLength > 0 && this.messages[roomId][currentRoomMessagesLength - 1].id === userId) {
+      this.messages[roomId][currentRoomMessagesLength - 1].data.push(message);
+    } else {
+      this.messages[roomId].push({
+        id: userId,
+        data: [message]
+      });
+    }
+
+    setTimeout(() => {
+      if (this.conversationContent
+        && this.conversationContent._elRef
+        && this.conversationContent._elRef.nativeElement
+        && this.conversationContent._elRef.nativeElement.querySelector) {
+        const conversationContent = this.conversationContent._elRef.nativeElement.querySelector('#conversation-content');
+
+        if (conversationContent) {
+          conversationContent.scrollTo(0, conversationContent.scrollHeight);
+        }
+      }
+    });
   }
 }
 

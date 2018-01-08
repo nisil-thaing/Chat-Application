@@ -9,9 +9,11 @@
     <input type="text" placeholder="Type new room name..." [(ngModel)]="newRoomName" (keyup.enter)="onSaveNewRoom()">
   </div>
   <app-conversation
+    #conversationContent
     [class.hidden]="isShowAddRoomInput"
     [data]="messages[selectedRoom._id]"
     [currentUser]="currentUser"
-    [selectedRoom]="selectedRoom">
+    [selectedRoom]="selectedRoom"
+    (chatSubmit)="onChatSubmit($event)">
   </app-conversation>
 </div>

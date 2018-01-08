@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ElementRef } from '@angular/core';
 import { ChatService } from '../../../services/chat/chat.service';
 
 import { debounce } from 'lodash';
@@ -21,26 +21,18 @@ export class ConversationComponent {
   @Input() data: any = [];
   @Input() currentUser: any = {};
   @Input() selectedRoom: any = {};
+  @Output() chatSubmit: EventEmitter<any>;
 
-  constructor(private _chatService: ChatService) {}
+  constructor(
+    private _elRef: ElementRef,
+    private _chatService: ChatService
+  ) {
+    this.chatSubmit = new EventEmitter();
+  }
 
   onChatSubmit() {
     if (this.currentUser._id && this.selectedRoom._id && this.chatMessage) {
-
-      if (this.data.length > 0 && this.data[this.data.length - 1].id === this.currentUser._id) {
-        this.data[this.data.length - 1].data.push(this.chatMessage);
-      } else {
-        this.data.push({
-          id: this.currentUser._id,
-          data: [this.chatMessage]
-        });
-      }
-
-      this._chatService.sendMsg({
-        message: this.chatMessage,
-        roomId: this.selectedRoom._id,
-        user: this.currentUser._id
-      });
+      this.chatSubmit.emit({ message: this.chatMessage });
 
       this.chatMessage = '';
     }

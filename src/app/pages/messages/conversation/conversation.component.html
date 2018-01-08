@@ -5,7 +5,7 @@
       <p>{{ selectedRoom?.updatedAt }}</p>
     </div>
   </div>
-  <div class="conversation-content">
+  <div id="conversation-content" class="conversation-content">
     <div *ngFor="let message of data"
       [class.parner-messages-wrapper]="message.id != currentUser._id"
       [class.user-messages-wrapper]="message.id == currentUser._id">

@@ -49,6 +49,13 @@ export class ChatService {
       });
   }
 
+  /* fetchPastMessages(params: { roomId: string }): Observable<any> {
+    return this._httpClient.get(`/rooms/${ params.roomId }/messages`)
+      .map((response: any) => {
+
+      });
+  } */
+
   saveNewRoom(params: { name: string }): Observable<ChatRoom> {
     return this._httpClient.post('/rooms', params, { observe: 'response' })
       .map((response: HttpResponse<ChatRoom>) => {
