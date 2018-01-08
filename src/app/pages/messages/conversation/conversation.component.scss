@@ -14,10 +14,26 @@
   }
 
   .conversation-content {
+    position: relative;
     border-bottom: 1px solid;
     height: calc(100vh - 98px);
     padding: 12px;
     overflow: scroll;
+
+    &.loading {
+      background-color: #e8e8e8;
+    }
+
+    .loading {
+      font-size: 50px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      -webkit-transform: translate(-50%, -50%);
+      -ms-transform: translate(-50%, -50%);
+      -moz-transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%);
+    }
 
     > div {
       &:not(:last-child) {
@@ -99,6 +115,12 @@
 
   .message-control {
     height: 49px;
+
+    &.loading {
+      input {
+        background-color: #e8e8e8;
+      }
+    }
 
     input {
       width: 100%;

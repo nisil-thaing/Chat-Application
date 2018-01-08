@@ -13,6 +13,7 @@ import { Subscription } from 'rxjs/Subscription';
 export class ConversationComponent {
   chatMessage: string;
   messages: any = [];
+  isLoadingData: boolean;
 
   onChangeMessage = debounce(() => {
     this._chatService.isTyping();

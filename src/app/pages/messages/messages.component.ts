@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
 import 'rxjs/add/operator/scan';
@@ -14,7 +15,6 @@ import { ChatRoom, ChatMessage } from '../../models';
 export class MessagesComponent implements OnInit, OnDestroy {
   // get current user, temporary by local storage
   currentUser = JSON.parse(localStorage.getItem('currentUser')) || {};
-  chatRooms$: Observable<Array<ChatRoom>> = this._chatService.fetchRooms();
   chatRooms: Array<ChatRoom>;
   selectedRoom: any = {};
   joinRoomActionStream$: Subscription;
@@ -24,17 +24,22 @@ export class MessagesComponent implements OnInit, OnDestroy {
 
   @ViewChild('conversationContent') private conversationContent: any;
 
-  constructor(private _chatService: ChatService) { }
+  constructor(
+    private _route: ActivatedRoute,
+    private _chatService: ChatService
+  ) { }
 
   ngOnInit() {
+    this._route.data.subscribe((data: { chatRooms: Array<ChatRoom> }) => {
+      this.chatRooms = data.chatRooms;
+    });
+
     this.joinRoomActionStream$ = this._chatService.messages.subscribe(res => {
       // temp - check message event
       if (this.currentUser._id && res.room && res.body) {
         this.updateChatMessages(res.author._id, res.room, res.body);
       }
     });
-
-    this.chatRooms$.subscribe(res => this.chatRooms = res);
   }
 
   ngOnDestroy() {
@@ -45,6 +50,7 @@ export class MessagesComponent implements OnInit, OnDestroy {
 
   assignInitRoomMessages(pastMessages: Array<ChatMessage>, roomId: string) {
     if (!roomId || !pastMessages || pastMessages.length === 0) {
+      this.conversationContent.isLoadingData = false;
       return;
     }
 
@@ -65,6 +71,7 @@ export class MessagesComponent implements OnInit, OnDestroy {
       }
     });
 
+    this.conversationContent.isLoadingData = false;
     this.scrollToConversationBottom();
 
     return;
@@ -89,6 +96,8 @@ export class MessagesComponent implements OnInit, OnDestroy {
   onJoinRoom(e) {
     if (this.currentUser._id && e.room && e.room._id) {
       if (!this.messages[e.room._id]) {
+        this.conversationContent.isLoadingData = true;
+
         const pastMessages$: Observable<Array<ChatMessage>> = this._chatService.fetchPastMessages({ roomId: e.room._id });
 
         pastMessages$.subscribe((pastMessages: Array<ChatMessage>) => {

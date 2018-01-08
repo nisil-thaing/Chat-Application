@@ -5,7 +5,10 @@
       <p>{{ selectedRoom?.updatedAt }}</p>
     </div>
   </div>
-  <div id="conversation-content" class="conversation-content">
+  <div id="conversation-content" class="conversation-content" [class.loading]="isLoadingData">
+    <div class="loading" [class.hidden]="!isLoadingData">
+      <i class="fa fa-spinner fa-spin" aria-hidden="true"></i>
+    </div>
     <div *ngFor="let message of data"
       [class.parner-messages-wrapper]="message.id != currentUser._id"
       [class.user-messages-wrapper]="message.id == currentUser._id">
@@ -15,7 +18,7 @@
       </div>
     </div>
   </div>
-  <div class="message-control">
-    <input type="text" placeholder="Type a message..." [(ngModel)]="chatMessage" (ngModelChange)="onChangeMessage($event)" (keyup.enter)="onChatSubmit()">
+  <div class="message-control" [class.loading]="isLoadingData">
+    <input type="text" placeholder="Type a message..." [(ngModel)]="chatMessage" (ngModelChange)="onChangeMessage($event)" (keyup.enter)="onChatSubmit()" [disabled]="isLoadingData">
   </div>
 </div>

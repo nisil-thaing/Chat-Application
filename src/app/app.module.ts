@@ -16,12 +16,16 @@ import { JWTInterceptor } from './helpers/jwt-interceptor';
 import { ChatService } from './services/chat/chat.service';
 import { WebsocketService } from './services/web-socket/web-socket.service';
 import { AuthGuard } from './helpers/auth.guard';
+import { ChatRoomsResolver } from './resolvers/messages/chat-rooms.resolver';
 
 export const appRoutes = [
   {
     path: 'messages',
     component: MessagesComponent,
     canActivate: [AuthGuard],
+    resolve: {
+      chatRooms: ChatRoomsResolver
+    },
     data: {
       title: 'Messages'
     },
@@ -74,6 +78,7 @@ export const appRoutes = [
     WebsocketService,
     ChatService,
     AuthGuard,
+    ChatRoomsResolver,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: JWTInterceptor,
