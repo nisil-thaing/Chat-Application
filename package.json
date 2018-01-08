@@ -9,7 +9,8 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "postinstall": "rm -rf node_modules && ng build --aot --prod"
+    "preinstall": "rm -rf node_modules",
+    "postinstall": "ng build --aot --prod"
   },
   "private": true,
   "dependencies": {
