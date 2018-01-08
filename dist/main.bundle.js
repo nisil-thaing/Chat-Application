@@ -699,6 +699,29 @@ var MessagesComponent = (function () {
             this.joinRoomActionStream$.unsubscribe();
         }
     };
+    MessagesComponent.prototype.assignInitRoomMessages = function (pastMessages, roomId) {
+        var _this = this;
+        if (!roomId || !pastMessages || pastMessages.length === 0) {
+            return;
+        }
+        pastMessages.forEach(function (msg) {
+            var userId = msg.author._id;
+            if (_this.messages[roomId] && _this.messages[roomId].length > 0 && _this.messages[roomId][0].id === userId) {
+                _this.messages[roomId][0].data.unshift(msg.body);
+            }
+            else {
+                if (!_this.messages[roomId]) {
+                    _this.messages[roomId] = [];
+                }
+                _this.messages[roomId].unshift({
+                    id: userId,
+                    data: [msg.body]
+                });
+            }
+        });
+        this.scrollToConversationBottom();
+        return;
+    };
     MessagesComponent.prototype.onChatSubmit = function (e) {
         if (!e.message) {
             return;
@@ -712,12 +735,17 @@ var MessagesComponent = (function () {
         return;
     };
     MessagesComponent.prototype.onJoinRoom = function (e) {
+        var _this = this;
         if (this.currentUser._id && e.room && e.room._id) {
+            if (!this.messages[e.room._id]) {
+                var pastMessages$ = this._chatService.fetchPastMessages({ roomId: e.room._id });
+                pastMessages$.subscribe(function (pastMessages) {
+                    _this.assignInitRoomMessages(pastMessages, e.room._id);
+                });
+            }
             this.selectedRoom = e.room;
             this._chatService.joinRoom({ user: this.currentUser._id, roomId: e.room._id });
-            if (!this.messages[this.selectedRoom._id]) {
-                this.messages[this.selectedRoom._id] = [];
-            }
+            this.scrollToConversationBottom();
         }
     };
     MessagesComponent.prototype.onAddNewRoom = function (e) {
@@ -736,7 +764,6 @@ var MessagesComponent = (function () {
         }
     };
     MessagesComponent.prototype.updateChatMessages = function (userId, roomId, message) {
-        var _this = this;
         if (!this.messages[roomId]) {
             this.messages[roomId] = [];
         }
@@ -750,6 +777,10 @@ var MessagesComponent = (function () {
                 data: [message]
             });
         }
+        this.scrollToConversationBottom();
+    };
+    MessagesComponent.prototype.scrollToConversationBottom = function () {
+        var _this = this;
         setTimeout(function () {
             if (_this.conversationContent
                 && _this.conversationContent._elRef
@@ -1106,12 +1137,15 @@ var ChatService = (function () {
             return response.body;
         });
     };
-    /* fetchPastMessages(params: { roomId: string }): Observable<any> {
-      return this._httpClient.get(`/rooms/${ params.roomId }/messages`)
-        .map((response: any) => {
-  
+    ChatService.prototype.fetchPastMessages = function (params) {
+        return this._httpClient.get("/messages?roomId=" + params.roomId, { observe: 'response' })
+            .map(function (response) {
+            if (response.status !== __WEBPACK_IMPORTED_MODULE_3__config_http_client_config__["a" /* HTTP_STATUS */].SUCCESS) {
+                return [];
+            }
+            return response.body;
         });
-    } */
+    };
     ChatService.prototype.saveNewRoom = function (params) {
         return this._httpClient.post('/rooms', params, { observe: 'response' })
             .map(function (response) {
