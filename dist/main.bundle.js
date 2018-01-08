@@ -535,7 +535,7 @@ var ChatRoomsComponent = (function () {
 /***/ "../../../../../src/app/pages/messages/conversation/conversation.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"conversation-wrapper col-xs-9\" *ngIf=\"selectedRoom && selectedRoom._id\">\n  <div class=\"heading-control\" align=\"center\">\n    <div class=\"parner-info\">\n      <span>{{ selectedRoom?.name }}</span>\n      <p>{{ selectedRoom?.updatedAt }}</p>\n    </div>\n  </div>\n  <div class=\"conversation-content\">\n    <div *ngFor=\"let message of data\"\n      [class.parner-messages-wrapper]=\"message.id != currentUser._id\"\n      [class.user-messages-wrapper]=\"message.id == currentUser._id\">\n      <div class=\"avatar\" *ngIf=\"message.id != currentUser._id\"></div>\n      <div class=\"message-item\" *ngFor=\"let messageItem of message.data\">\n        <span>{{ messageItem }}</span>\n      </div>\n    </div>\n  </div>\n  <div class=\"message-control\">\n    <input type=\"text\" placeholder=\"Type a message...\" [(ngModel)]=\"chatMessage\" (ngModelChange)=\"onChangeMessage($event)\" (keyup.enter)=\"onChatSubmit()\">\n  </div>\n</div>\n"
+module.exports = "<div class=\"conversation-wrapper col-xs-9\" *ngIf=\"selectedRoom && selectedRoom._id\">\n  <div class=\"heading-control\" align=\"center\">\n    <div class=\"parner-info\">\n      <span>{{ selectedRoom?.name }}</span>\n      <p>{{ selectedRoom?.updatedAt }}</p>\n    </div>\n  </div>\n  <div id=\"conversation-content\" class=\"conversation-content\">\n    <div *ngFor=\"let message of data\"\n      [class.parner-messages-wrapper]=\"message.id != currentUser._id\"\n      [class.user-messages-wrapper]=\"message.id == currentUser._id\">\n      <div class=\"avatar\" *ngIf=\"message.id != currentUser._id\"></div>\n      <div class=\"message-item\" *ngFor=\"let messageItem of message.data\">\n        <span>{{ messageItem }}</span>\n      </div>\n    </div>\n  </div>\n  <div class=\"message-control\">\n    <input type=\"text\" placeholder=\"Type a message...\" [(ngModel)]=\"chatMessage\" (ngModelChange)=\"onChangeMessage($event)\" (keyup.enter)=\"onChatSubmit()\">\n  </div>\n</div>\n"
 
 /***/ }),
 
@@ -579,8 +579,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 var ConversationComponent = (function () {
-    function ConversationComponent(_chatService) {
+    function ConversationComponent(_elRef, _chatService) {
         var _this = this;
+        this._elRef = _elRef;
         this._chatService = _chatService;
         this.messages = [];
         this.onChangeMessage = Object(__WEBPACK_IMPORTED_MODULE_2_lodash__["debounce"])(function () {
@@ -589,23 +590,11 @@ var ConversationComponent = (function () {
         this.data = [];
         this.currentUser = {};
         this.selectedRoom = {};
+        this.chatSubmit = new __WEBPACK_IMPORTED_MODULE_0__angular_core__["v" /* EventEmitter */]();
     }
     ConversationComponent.prototype.onChatSubmit = function () {
         if (this.currentUser._id && this.selectedRoom._id && this.chatMessage) {
-            if (this.data.length > 0 && this.data[this.data.length - 1].id === this.currentUser._id) {
-                this.data[this.data.length - 1].data.push(this.chatMessage);
-            }
-            else {
-                this.data.push({
-                    id: this.currentUser._id,
-                    data: [this.chatMessage]
-                });
-            }
-            this._chatService.sendMsg({
-                message: this.chatMessage,
-                roomId: this.selectedRoom._id,
-                user: this.currentUser._id
-            });
+            this.chatSubmit.emit({ message: this.chatMessage });
             this.chatMessage = '';
         }
     };
@@ -621,13 +610,18 @@ var ConversationComponent = (function () {
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["D" /* Input */])(),
         __metadata("design:type", Object)
     ], ConversationComponent.prototype, "selectedRoom", void 0);
+    __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["P" /* Output */])(),
+        __metadata("design:type", __WEBPACK_IMPORTED_MODULE_0__angular_core__["v" /* EventEmitter */])
+    ], ConversationComponent.prototype, "chatSubmit", void 0);
     ConversationComponent = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
             selector: 'app-conversation',
             template: __webpack_require__("../../../../../src/app/pages/messages/conversation/conversation.component.html"),
             styles: [__webpack_require__("../../../../../src/app/pages/messages/conversation/conversation.component.scss")]
         }),
-        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__services_chat_chat_service__["a" /* ChatService */]])
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_0__angular_core__["t" /* ElementRef */],
+            __WEBPACK_IMPORTED_MODULE_1__services_chat_chat_service__["a" /* ChatService */]])
     ], ConversationComponent);
     return ConversationComponent;
 }());
@@ -639,7 +633,7 @@ var ConversationComponent = (function () {
 /***/ "../../../../../src/app/pages/messages/messages.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"messages-wrapper\">\n  <app-chat-rooms\n    [chatRooms]=\"chatRooms\"\n    [selectedRoom]=\"selectedRoom\"\n    (joinRoom)=\"onJoinRoom($event)\"\n    (addNewRoom)=\"onAddNewRoom($event)\">\n  </app-chat-rooms>\n  <div class=\"add-room-wrapper col-xs-9\" *ngIf=\"isShowAddRoomInput\">\n    <input type=\"text\" placeholder=\"Type new room name...\" [(ngModel)]=\"newRoomName\" (keyup.enter)=\"onSaveNewRoom()\">\n  </div>\n  <app-conversation\n    [class.hidden]=\"isShowAddRoomInput\"\n    [data]=\"messages[selectedRoom._id]\"\n    [currentUser]=\"currentUser\"\n    [selectedRoom]=\"selectedRoom\">\n  </app-conversation>\n</div>\n"
+module.exports = "<div class=\"messages-wrapper\">\n  <app-chat-rooms\n    [chatRooms]=\"chatRooms\"\n    [selectedRoom]=\"selectedRoom\"\n    (joinRoom)=\"onJoinRoom($event)\"\n    (addNewRoom)=\"onAddNewRoom($event)\">\n  </app-chat-rooms>\n  <div class=\"add-room-wrapper col-xs-9\" *ngIf=\"isShowAddRoomInput\">\n    <input type=\"text\" placeholder=\"Type new room name...\" [(ngModel)]=\"newRoomName\" (keyup.enter)=\"onSaveNewRoom()\">\n  </div>\n  <app-conversation\n    #conversationContent\n    [class.hidden]=\"isShowAddRoomInput\"\n    [data]=\"messages[selectedRoom._id]\"\n    [currentUser]=\"currentUser\"\n    [selectedRoom]=\"selectedRoom\"\n    (chatSubmit)=\"onChatSubmit($event)\">\n  </app-conversation>\n</div>\n"
 
 /***/ }),
 
@@ -693,23 +687,9 @@ var MessagesComponent = (function () {
     MessagesComponent.prototype.ngOnInit = function () {
         var _this = this;
         this.joinRoomActionStream$ = this._chatService.messages.subscribe(function (res) {
-            console.log(res);
             // temp - check message event
             if (_this.currentUser._id && res.room && res.body) {
-                var roomId = res.room;
-                if (!_this.messages[roomId]) {
-                    _this.messages[roomId] = [];
-                }
-                var currentRoomMessagesLength = _this.messages[roomId].length;
-                if (currentRoomMessagesLength > 0 && _this.messages[roomId][currentRoomMessagesLength - 1].id === res.author._id) {
-                    _this.messages[roomId][currentRoomMessagesLength - 1].data.push(res.body);
-                }
-                else {
-                    _this.messages[roomId].push({
-                        id: res.author._id,
-                        data: [res.body]
-                    });
-                }
+                _this.updateChatMessages(res.author._id, res.room, res.body);
             }
         });
         this.chatRooms$.subscribe(function (res) { return _this.chatRooms = res; });
@@ -718,6 +698,18 @@ var MessagesComponent = (function () {
         if (this.joinRoomActionStream$ && this.joinRoomActionStream$.unsubscribe) {
             this.joinRoomActionStream$.unsubscribe();
         }
+    };
+    MessagesComponent.prototype.onChatSubmit = function (e) {
+        if (!e.message) {
+            return;
+        }
+        this.updateChatMessages(this.currentUser._id, this.selectedRoom._id, e.message);
+        this._chatService.sendMsg({
+            message: e.message,
+            roomId: this.selectedRoom._id,
+            user: this.currentUser._id
+        });
+        return;
     };
     MessagesComponent.prototype.onJoinRoom = function (e) {
         if (this.currentUser._id && e.room && e.room._id) {
@@ -743,6 +735,37 @@ var MessagesComponent = (function () {
             });
         }
     };
+    MessagesComponent.prototype.updateChatMessages = function (userId, roomId, message) {
+        var _this = this;
+        if (!this.messages[roomId]) {
+            this.messages[roomId] = [];
+        }
+        var currentRoomMessagesLength = this.messages[roomId].length;
+        if (currentRoomMessagesLength > 0 && this.messages[roomId][currentRoomMessagesLength - 1].id === userId) {
+            this.messages[roomId][currentRoomMessagesLength - 1].data.push(message);
+        }
+        else {
+            this.messages[roomId].push({
+                id: userId,
+                data: [message]
+            });
+        }
+        setTimeout(function () {
+            if (_this.conversationContent
+                && _this.conversationContent._elRef
+                && _this.conversationContent._elRef.nativeElement
+                && _this.conversationContent._elRef.nativeElement.querySelector) {
+                var conversationContent = _this.conversationContent._elRef.nativeElement.querySelector('#conversation-content');
+                if (conversationContent) {
+                    conversationContent.scrollTo(0, conversationContent.scrollHeight);
+                }
+            }
+        });
+    };
+    __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_9" /* ViewChild */])('conversationContent'),
+        __metadata("design:type", Object)
+    ], MessagesComponent.prototype, "conversationContent", void 0);
     MessagesComponent = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
             selector: 'app-messages',
@@ -1083,6 +1106,12 @@ var ChatService = (function () {
             return response.body;
         });
     };
+    /* fetchPastMessages(params: { roomId: string }): Observable<any> {
+      return this._httpClient.get(`/rooms/${ params.roomId }/messages`)
+        .map((response: any) => {
+  
+        });
+    } */
     ChatService.prototype.saveNewRoom = function (params) {
         return this._httpClient.post('/rooms', params, { observe: 'response' })
             .map(function (response) {
@@ -1223,7 +1252,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 if (__WEBPACK_IMPORTED_MODULE_3__environments_environment__["a" /* environment */].production) {
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_13" /* enableProdMode */])();
+    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_14" /* enableProdMode */])();
 }
 Object(__WEBPACK_IMPORTED_MODULE_1__angular_platform_browser_dynamic__["a" /* platformBrowserDynamic */])().bootstrapModule(__WEBPACK_IMPORTED_MODULE_2__app_app_module__["a" /* AppModule */])
     .catch(function (err) { return console.log(err); });
