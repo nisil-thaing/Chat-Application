@@ -37,7 +37,7 @@ export class MessagesComponent implements OnInit, OnDestroy {
     this.joinRoomActionStream$ = this._chatService.messages.subscribe(res => {
       // temp - check message event
       if (this.currentUser._id && res.room && res.body) {
-        this.updateChatMessages(res.author._id, res.room, res.body);
+        this.updateChatMessages({ id: res.author._id, name: res.author.name}, res.room, res.body);
       }
     });
   }
@@ -57,7 +57,7 @@ export class MessagesComponent implements OnInit, OnDestroy {
     pastMessages.forEach(msg => {
       const userId = msg.author._id;
 
-      if (this.messages[roomId] && this.messages[roomId].length > 0 && this.messages[roomId][0].id === userId) {
+      if (this.messages[roomId] && this.messages[roomId].length > 0 && this.messages[roomId][0].user.id === userId) {
         this.messages[roomId][0].data.unshift(msg.body);
       } else {
         if (!this.messages[roomId]) {
@@ -65,7 +65,10 @@ export class MessagesComponent implements OnInit, OnDestroy {
         }
 
         this.messages[roomId].unshift({
-          id: userId,
+          user: {
+            id: userId,
+            name: msg.author.name
+          },
           data: [msg.body]
         });
       }
@@ -82,7 +85,7 @@ export class MessagesComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.updateChatMessages(this.currentUser._id, this.selectedRoom._id, e.message);
+    this.updateChatMessages({ id: this.currentUser._id, name: this.currentUser.name }, this.selectedRoom._id, e.message);
 
     this._chatService.sendMsg({
       message: e.message,
@@ -128,18 +131,18 @@ export class MessagesComponent implements OnInit, OnDestroy {
     }
   }
 
-  updateChatMessages(userId, roomId, message) {
+  updateChatMessages(user: { id: string, name: string }, roomId, message) {
     if (!this.messages[roomId]) {
       this.messages[roomId] = [];
     }
 
     const currentRoomMessagesLength = this.messages[roomId].length;
 
-    if (currentRoomMessagesLength > 0 && this.messages[roomId][currentRoomMessagesLength - 1].id === userId) {
+    if (currentRoomMessagesLength > 0 && this.messages[roomId][currentRoomMessagesLength - 1].user.id === user.id) {
       this.messages[roomId][currentRoomMessagesLength - 1].data.push(message);
     } else {
       this.messages[roomId].push({
-        id: userId,
+        user: user,
         data: [message]
       });
     }

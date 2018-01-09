@@ -2,7 +2,7 @@
   <div class="heading-control" align="center">
     <div class="parner-info">
       <span>{{ selectedRoom?.name }}</span>
-      <p>{{ selectedRoom?.updatedAt }}</p>
+      <!-- <p>{{ selectedRoom?.updatedAt }}</p> -->
     </div>
   </div>
   <div id="conversation-content" class="conversation-content" [class.loading]="isLoadingData">
@@ -10,9 +10,10 @@
       <i class="fa fa-spinner fa-spin" aria-hidden="true"></i>
     </div>
     <div *ngFor="let message of data"
-      [class.parner-messages-wrapper]="message.id != currentUser._id"
-      [class.user-messages-wrapper]="message.id == currentUser._id">
-      <div class="avatar" *ngIf="message.id != currentUser._id"></div>
+      [class.parner-messages-wrapper]="message.user.id != currentUser._id"
+      [class.user-messages-wrapper]="message.user.id == currentUser._id">
+      <div class="user-name" *ngIf="message.user.id != currentUser._id">{{ message.user.name }}</div>
+      <div class="avatar" *ngIf="message.user.id != currentUser._id"></div>
       <div class="message-item" *ngFor="let messageItem of message.data">
         <span>{{ messageItem }}</span>
       </div>
