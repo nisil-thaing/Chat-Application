@@ -6,7 +6,7 @@
     (addNewRoom)="onAddNewRoom($event)">
   </app-chat-rooms>
   <div class="add-room-wrapper col-xs-9" *ngIf="isShowAddRoomInput">
-    <input type="text" placeholder="Type new room name..." [(ngModel)]="newRoomName" (keyup.enter)="onSaveNewRoom()">
+    <input type="text" placeholder="Type new room name..." [(ngModel)]="newRoomName" (keyup.enter)="onSaveNewRoom()" (keyup.escape)="newRoomName = ''; isShowAddRoomInput = false">
   </div>
   <app-conversation
     #conversationContent
